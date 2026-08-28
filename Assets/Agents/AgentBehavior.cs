@@ -131,8 +131,9 @@ public class AgentBehavior : MonoBehaviour
         //Checking if the angle is within the line of sight angle and agent is close enough to the target
         if (angle < _losAngle && angle > - 1 * _losAngle && withinDistance)
         {
-            Debug.Log("In Sight");
+            //If so, begin chasing the target
             _isChasing = true;
+            Debug.Log("In Sight");
         }
         else
         {
