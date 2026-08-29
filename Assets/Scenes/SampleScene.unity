@@ -1660,6 +1660,7 @@ MonoBehaviour:
   _agentDetectionRadius: 10
   _losDistance: 20
   _losAngle: 45
+  _inPursuit: 0
 --- !u!195 &930447323
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3633,7 +3634,7 @@ Transform:
   m_GameObject: {fileID: 1738591491}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 16.75, y: 1, z: 0}
+  m_LocalPosition: {x: -19.25, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3751,6 +3752,7 @@ MonoBehaviour:
   _agentDetectionRadius: 10
   _losDistance: 20
   _losAngle: 45
+  _inPursuit: 0
 --- !u!1 &1791386866
 GameObject:
   m_ObjectHideFlags: 0
@@ -4740,6 +4742,10 @@ PrefabInstance:
     - target: {fileID: 518738952652443446, guid: 9811fa2fa5d1f374aaf208b8d6b33835, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0.00937613
+      objectReference: {fileID: 0}
+    - target: {fileID: 1533320851417794751, guid: 9811fa2fa5d1f374aaf208b8d6b33835, type: 3}
+      propertyPath: _bottomClamp
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 1605580556050906065, guid: 9811fa2fa5d1f374aaf208b8d6b33835, type: 3}
       propertyPath: m_TagString

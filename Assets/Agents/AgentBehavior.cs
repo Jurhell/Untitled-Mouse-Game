@@ -19,18 +19,21 @@ public class AgentBehavior : MonoBehaviour
     [SerializeField]
     private float _losAngle = 45f;
 
+    [SerializeField]
+    private bool _inPursuit;
+
     private NavMeshAgent _agent;
 
-    private EState _currentState = EState.IDLE;
+    private EState _currentState = EState.WORKING;
 
     private bool _isHeadAgent = false;
-    private bool _isChasing = false;
+    private static bool _targetIsFound = false;
 
     private UnityEvent _playerDetectedEvent = new UnityEvent();
 
     enum EState
     {
-        IDLE,
+        WORKING,
         ROAM,
         PURSUE,
         SEARCH,
@@ -49,24 +52,28 @@ public class AgentBehavior : MonoBehaviour
         if (!_agent.enabled)
             return;
 
-        TransitionTo(EState.PURSUE);
-
         //Line of sight
         LineOfSightCheck();
-
-        //When player is spotted alert nearby agents
-        //If player is spotted by head agent alert all agents
 
         //Target alert radius
         //Search last spotted area
 
+        //When head agent is no longer in pursuit, all agents stop pursuing
+        //Farther agents can end pursuit on their own if they lose sight of the target
+
         //Idle state should only be active at the beginning of the game
-        if (_currentState == EState.IDLE)
+        if (_currentState == EState.WORKING)
         {
-            //play idle animation
+            //Agent performs its normal behavior
             return;
         }
         else if (_currentState == EState.PURSUE)
+        {
+            //When player is spotted alert all agents
+            _targetIsFound = true;
+            return;
+        }
+        else if (_currentState == EState.SEARCH)
         {
             return;
         }
@@ -74,7 +81,7 @@ public class AgentBehavior : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!_agent.enabled || !_isChasing)
+        if (!_agent.enabled || !_targetIsFound)
             return;
 
         Chase();
@@ -132,13 +139,12 @@ public class AgentBehavior : MonoBehaviour
         if (angle < _losAngle && angle > - 1 * _losAngle && withinDistance)
         {
             //If so, begin chasing the target
-            _isChasing = true;
+            TransitionTo(EState.PURSUE);
             Debug.Log("In Sight");
         }
         else
         {
             Debug.Log("Not in Sight");
-            _isChasing = false;
         }
     }
 
@@ -149,7 +155,7 @@ public class AgentBehavior : MonoBehaviour
         //Checking if seek magnitude is less than the product of the agent's avoidance radius and detection radius
         if (seekMagnitude <= _agent.radius * _agentDetectionRadius)
         {
-            _isChasing = true;
+            _targetIsFound = true;
             return true;
         }
         else
