@@ -81,7 +81,7 @@ public class MouseController : MonoBehaviour
         cameraRight.y = 0f;
 
         //Normalizing camera vectors for diagonal movement
-        cameraForward = _camera.forward.normalized;
+        cameraForward = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
         cameraRight = _camera.right.normalized;
 
         //Storing player input relative to camera orientation
