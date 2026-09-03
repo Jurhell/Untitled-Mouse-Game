@@ -26,7 +26,7 @@ public class FollowTarget : MonoBehaviour
         //Unrestricted horizontal rotation...
         _cinemachineTargetYaw = UpdateRotation(_cinemachineTargetYaw, mouseX, float.MinValue, float.MaxValue, false);
 
-        ApplyRotations(_cinemachineTargetPitch, _cinemachineTargetYaw);
+        ApplyRotations(-_cinemachineTargetPitch, _cinemachineTargetYaw);
     }
 
     private void ApplyRotations(float pitch, float yaw)

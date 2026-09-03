@@ -7,8 +7,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(NavMeshAgent))]
 public class AgentBehavior : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject _target;
+    [SerializeField] private GameObject _target;
 
     [SerializeField, Min(0.5f), Tooltip("How big the agent's detection radius is.")]
     private float _agentDetectionRadius = 10f;
@@ -16,11 +15,14 @@ public class AgentBehavior : MonoBehaviour
     [SerializeField, Min(0.5f), Tooltip("How far the agent's line of sight is.")]
     private float _losDistance = 20f;
 
-    [SerializeField]
+    [SerializeField, Min(0.5f), Tooltip("How wide the agent's line of sight is.")]
     private float _losAngle = 45f;
 
-    [SerializeField]
-    private bool _inPursuit;
+    [SerializeField, Min(1f), Tooltip("How long the agent will search for the target.")]
+    private float _searchTime = 5f;
+
+    private float _searchTimer = 0f;
+    private Vector3 _lastKnownPosition;
 
     private NavMeshAgent _agent;
 
@@ -28,6 +30,8 @@ public class AgentBehavior : MonoBehaviour
 
     private bool _isHeadAgent = false;
     private static bool _targetIsFound = false;
+
+    private List<NavMeshAgent> _agentsInPursuit = new List<NavMeshAgent>();
 
     private UnityEvent _playerDetectedEvent = new UnityEvent();
 
@@ -56,6 +60,8 @@ public class AgentBehavior : MonoBehaviour
         LineOfSightCheck();
 
         //Target alert radius
+
+        //When player runs behind something or out of sight, agent stops pursuing player
         //Search last spotted area
 
         //When head agent is no longer in pursuit, all agents stop pursuing
@@ -71,20 +77,34 @@ public class AgentBehavior : MonoBehaviour
         {
             //When player is spotted alert all agents
             _targetIsFound = true;
+            _agentsInPursuit.Add(_agent);
+
             return;
         }
         else if (_currentState == EState.SEARCH)
         {
+            //When player is lost, agent stops pursuing
+            _agentsInPursuit.Remove(_agent);
+            //Agent begins searching
+            Search();
+
             return;
         }
     }
 
     private void FixedUpdate()
     {
+        //Guard Clause
         if (!_agent.enabled || !_targetIsFound)
             return;
 
-        Chase();
+        //If the agent is in pursuit, chase the target
+        if (_agentsInPursuit.Contains(_agent))
+            Chase();
+
+        //If no agents are in pursuit, the target is no longer found
+        if (_agentsInPursuit.Count == 0)
+            _targetIsFound = false;
     }
 
     private void TransitionTo(EState state)
@@ -107,6 +127,11 @@ public class AgentBehavior : MonoBehaviour
             withinDistance= true;
             Debug.Log("Player is close");
         }
+        else
+        {
+            withinDistance= false;
+            Debug.Log("Player is far");
+        }
 
         RaycastHit hit;
         
@@ -116,7 +141,16 @@ public class AgentBehavior : MonoBehaviour
             //If raycast has hit the player
             if (hit.collider.gameObject == _target)
             {
+                //Storing player's position for when the player is lost
+                _lastKnownPosition = hit.collider.transform.position;
                 Debug.Log("Ray has hit player");
+            }
+            //If raycast has hit something other than the player after target was previously found...
+            else if (hit.collider.gameObject != _target && _targetIsFound)
+            {
+                //...Transition to search state
+                TransitionTo(EState.SEARCH);
+                Debug.Log("Player is lost");
             }
             //If raycast has not hit the player
             else
@@ -140,11 +174,11 @@ public class AgentBehavior : MonoBehaviour
         {
             //If so, begin chasing the target
             TransitionTo(EState.PURSUE);
-            Debug.Log("In Sight");
+            Debug.Log("Chasing");
         }
         else
         {
-            Debug.Log("Not in Sight");
+            Debug.Log("Not Chasing");
         }
     }
 
@@ -176,6 +210,26 @@ public class AgentBehavior : MonoBehaviour
 
         //Having agent chase
         _agent.destination = _target.transform.position + _target.transform.forward * lookAhead;
+    }
+
+    private void Search()
+    {
+        //Having agent search for the target at the last known position
+        _agent.destination = _lastKnownPosition;
+
+        //When agent enters the radius of the last known position, begin searching
+        //Agent rotates to search for the target
+
+        if (_agent.transform.position == _lastKnownPosition)
+            _searchTimer += Time.deltaTime;
+
+        //If the agent hasn't found the target after searching for a set amount of time...
+        if (_searchTimer == _searchTime)
+        {
+            //...Agent will end search and return to its normal behavior
+            TransitionTo(EState.WORKING);
+            _searchTimer = 0f;
+        }
     }
 
     //private void OnDrawGizmos()
