@@ -124,8 +124,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 51446615430654410}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.22728916, y: -0.04013632, z: 0.00937613, w: 0.9729547}
-  m_LocalPosition: {x: 0.5, y: 3, z: -6.05}
+  m_LocalRotation: {x: 0.113456376, y: 0, z: 0, w: 0.993543}
+  m_LocalPosition: {x: 0, y: 1.4000001, z: -6.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -363,8 +363,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3838821216226066982}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.22728914, y: -0.040136322, z: 0.009376131, w: 0.9729547}
-  m_LocalPosition: {x: 0.5, y: 3, z: -6.05}
+  m_LocalRotation: {x: 0.113456376, y: 0, z: 0, w: 0.993543}
+  m_LocalPosition: {x: 0, y: 1.4000001, z: -6.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -458,7 +458,7 @@ GameObject:
   - component: {fileID: 773988686720299377}
   - component: {fileID: 7885629211419936550}
   - component: {fileID: 1533320851417794751}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}

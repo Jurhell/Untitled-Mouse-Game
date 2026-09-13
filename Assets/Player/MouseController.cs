@@ -81,6 +81,8 @@ public class MouseController : MonoBehaviour
         cameraRight.y = 0f;
 
         //Normalizing camera vectors for diagonal movement
+        //Projecting camera forward on a plane to prevent vector from pointing downwards when camera is looking down
+        //this prevents player from being unable to move forward when camera is looking down
         cameraForward = Vector3.ProjectOnPlane(_camera.transform.forward, Vector3.up).normalized;
         cameraRight = _camera.right.normalized;
 

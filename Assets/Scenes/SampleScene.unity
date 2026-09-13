@@ -1778,6 +1778,7 @@ GameObject:
   - component: {fileID: 930447324}
   - component: {fileID: 930447323}
   - component: {fileID: 930447322}
+  - component: {fileID: 930447328}
   m_Layer: 0
   m_Name: Test Agent Capsule
   m_TagString: Untagged
@@ -1913,6 +1914,26 @@ Transform:
   - {fileID: 1356311225}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &930447328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930447321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96bccdf32e1c0e2428a3b95eb9cd6de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _viewRadius: 6.5
+  _viewAngle: 75
+  _targetMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &974178211
 GameObject:
   m_ObjectHideFlags: 0
@@ -2242,7 +2263,7 @@ GameObject:
   - component: {fileID: 1113284112}
   - component: {fileID: 1113284111}
   - component: {fileID: 1113284110}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2559,7 +2580,7 @@ GameObject:
   - component: {fileID: 1356311228}
   - component: {fileID: 1356311227}
   - component: {fileID: 1356311226}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3969,6 +3990,7 @@ GameObject:
   - component: {fileID: 1738591494}
   - component: {fileID: 1738591493}
   - component: {fileID: 1738591497}
+  - component: {fileID: 1738591498}
   m_Layer: 0
   m_Name: Head Agent Capsule
   m_TagString: Untagged
@@ -4104,6 +4126,26 @@ MonoBehaviour:
   _losDistance: 20
   _losAngle: 45
   _searchTime: 5
+--- !u!114 &1738591498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738591491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96bccdf32e1c0e2428a3b95eb9cd6de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _viewRadius: 0
+  _viewAngle: 0
+  _targetMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &1777538242
 GameObject:
   m_ObjectHideFlags: 0
