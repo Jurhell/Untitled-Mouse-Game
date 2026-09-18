@@ -1779,7 +1779,7 @@ GameObject:
   - component: {fileID: 930447323}
   - component: {fileID: 930447322}
   - component: {fileID: 930447328}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Test Agent Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1799,10 +1799,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 479842261}
-  _agentDetectionRadius: 10
-  _losDistance: 20
-  _losAngle: 45
-  _searchTime: 5
+  _searchTime: 10
+  _searchPoint: {fileID: 8016630210726874342, guid: 7d1065cbccb0d164ca88d00df837be77, type: 3}
 --- !u!195 &930447323
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1926,7 +1924,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96bccdf32e1c0e2428a3b95eb9cd6de5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _viewRadius: 6.5
+  _viewRadius: 20
   _viewAngle: 75
   _targetMask:
     serializedVersion: 2
@@ -3991,7 +3989,7 @@ GameObject:
   - component: {fileID: 1738591493}
   - component: {fileID: 1738591497}
   - component: {fileID: 1738591498}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Head Agent Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4122,10 +4120,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 479842261}
-  _agentDetectionRadius: 10
-  _losDistance: 20
-  _losAngle: 45
-  _searchTime: 5
+  _searchTime: 10
+  _searchPoint: {fileID: 8016630210726874342, guid: 7d1065cbccb0d164ca88d00df837be77, type: 3}
 --- !u!114 &1738591498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4138,8 +4134,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96bccdf32e1c0e2428a3b95eb9cd6de5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _viewRadius: 0
-  _viewAngle: 0
+  _viewRadius: 20
+  _viewAngle: 75
   _targetMask:
     serializedVersion: 2
     m_Bits: 64

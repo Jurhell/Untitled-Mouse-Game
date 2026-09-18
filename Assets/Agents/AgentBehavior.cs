@@ -3,29 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class AgentBehavior : MonoBehaviour
 {
-    [Header("Detection")]
     [SerializeField] private GameObject _target;
-
-    [SerializeField, Min(0.5f), Tooltip("How big the agent's detection radius is.")]
-    private float _agentDetectionRadius = 10f;
-
-    [SerializeField, Min(0.5f), Tooltip("How far the agent's line of sight is.")]
-    private float _losDistance = 20f;
-
-    [SerializeField, Min(0.5f), Tooltip("How wide the agent's line of sight is.")]
-    private float _losAngle = 45f;
 
     [Space, Header("Search")]
     [SerializeField, Min(1f), Tooltip("How long the agent will search for the target.")]
     private float _searchTime = 5f;
 
+    [SerializeField, Tooltip("The GameObject representing the search point.")]
+    private GameObject _searchPoint;
+
     private float _searchTimer = 0f;
     private Vector3 _lastKnownPosition;
+
+    private GameObject _searchPointInstance;
 
     private NavMeshAgent _agent;
 
@@ -33,11 +27,11 @@ public class AgentBehavior : MonoBehaviour
 
     private bool _isHeadAgent = false;
     private bool _isSearching = false;
+    private bool _SearchPointCreated = false;
+    private bool _searchTriggered = false;
     private static bool _targetIsFound = false;
 
     private static List<NavMeshAgent> _eyesOnTarget = new List<NavMeshAgent>();
-
-    private UnityEvent _playerDetectedEvent = new UnityEvent();
 
     enum EState
     {
@@ -61,7 +55,7 @@ public class AgentBehavior : MonoBehaviour
             return;
 
         //Line of sight
-        LineOfSightCheck();
+        //LineOfSightCheck();
 
         //Target alert radius
 
@@ -82,12 +76,12 @@ public class AgentBehavior : MonoBehaviour
             //When player is spotted alert all agents
             _targetIsFound = true;
 
+            //The rest of PURSUE behavior is handled in FixedUpdate to avoid issues with NavMeshAgent movement
+
             return;
         }
         else if (_currentState == EState.SEARCH)
         {
-            //When player is lost, agent stops pursuing
-            _eyesOnTarget.Remove(_agent);
             //Agent begins searching
             Search();
 
@@ -118,96 +112,6 @@ public class AgentBehavior : MonoBehaviour
         _currentState = state;
     }
 
-    private void LineOfSightCheck()
-    {
-        bool withinDistance = false;
-
-
-        //Checking if player is within line of sight distance
-        if (Vector3.Distance(_agent.transform.position, _target.transform.position) <= _losDistance)
-        {
-            withinDistance= true;
-            //Debug.Log("Player is close");
-        }
-        else
-        {
-            withinDistance= false;
-            //Debug.Log("Player is far");
-        }
-
-        RaycastHit hit;
-        
-        //Casting a ray that serves as the agent's line of sight
-        if (Physics.Raycast(_agent.transform.position, _agent.transform.forward, out hit, _losDistance))
-        {
-            //If raycast has hit the player
-            if (hit.collider.gameObject == _target)
-            {
-                //Adding the agent to the list of agents that have eyes on the target
-                if (!_eyesOnTarget.Contains(_agent))
-                    _eyesOnTarget.Add(_agent);
-
-                //Storing player's position for when the player is lost
-                _lastKnownPosition = hit.collider.transform.position;
-
-                Debug.Log("Ray has hit player");
-            }
-            //If raycast has hit something other than the player after target was previously found...
-            else if (hit.collider.gameObject != _target && _targetIsFound)
-            {
-                //Remove the agent from the list of agents that have eyes on the target
-                if (_eyesOnTarget.Contains(_agent))
-                    _eyesOnTarget.Remove(_agent);
-
-                Debug.Log("Player is lost");
-            }
-            //If raycast has not hit the player
-            else
-            {
-                Debug.Log("Ray has not hit player");
-            }
-        }
-        else
-        {
-            //Debug.Log("Out of Sight2");
-        }
-
-        Vector3 directionToTarget = _target.transform.position - _agent.transform.position;
-        Vector3 agentForward = _agent.transform.forward;
-
-        //Calculating the angle between the agent's forward direction and the direction to the target
-        float angle = Vector3.SignedAngle(directionToTarget, agentForward, Vector3.up);
-
-        //Checking if the angle is within the line of sight angle and agent is close enough to the target
-        if (angle < _losAngle && angle > - 1 * _losAngle && withinDistance)
-        {
-            //If so, begin chasing the target
-            TransitionTo(EState.PURSUE);
-
-            _isSearching = false;
-
-            Debug.Log("Chasing");
-        }
-        else
-        {
-            Debug.Log("Not Chasing");
-        }
-    }
-
-    private bool RadiusCheck()
-    {
-        float seekMagnitude = (_target.transform.position - _agent.transform.position).magnitude;
-
-        //Checking if seek magnitude is less than the product of the agent's avoidance radius and detection radius
-        if (seekMagnitude <= _agent.radius * _agentDetectionRadius)
-        {
-            _targetIsFound = true;
-            return true;
-        }
-        else
-            return false;
-    }
-
     private void Chase()
     {
         //Storing direction to the target
@@ -226,22 +130,29 @@ public class AgentBehavior : MonoBehaviour
 
     private void Search()
     {
-        //Having agent search for the target at the last known position
-        _agent.destination = _lastKnownPosition;
-
-
-        //When agent enters the radius of the last known position, begin searching
-        //Agent rotates to search for the target
-
-        if (_agent.transform.position == _lastKnownPosition)
+        if (!_SearchPointCreated)
         {
-            _searchTimer += Time.deltaTime;
-            _isSearching = true;
+            //Creating a search point at the last known position of the target
+            _searchPointInstance = Instantiate(_searchPoint, _lastKnownPosition, Quaternion.identity);
+            _SearchPointCreated = true;
         }
 
+        //Having the agent move to the search point
+        _agent.destination = _searchPointInstance.transform.position;
+
+        //While agent is searching
         if (_isSearching)
         {
-            //StartCoroutine(Wait(() => { _agent.transform.Rotate(0, UnityEngine.Random.Range(-180f, 180f), 0); }, 1f));
+            _searchTimer += Time.deltaTime;
+
+            if (!_searchTriggered)
+            {
+                //Having the agent rotate in a random direction every 3 seconds while searching,
+                //and preventing the agent from rotating again until the 3 seconds have passed
+                StartCoroutine(Wait(() => { _agent.transform.Rotate(0, UnityEngine.Random.Range(-180f, 180f), 0); _searchTriggered = false; }, 3f));
+                _searchTriggered = true;
+            }
+            
             Debug.Log("Searching");
         }
 
@@ -250,9 +161,62 @@ public class AgentBehavior : MonoBehaviour
         {
             //...Agent will end search and return to its normal behavior
             TransitionTo(EState.WORKING);
-            _searchTimer = 0f;
-            _isSearching = false;
+            Debug.Log("Test");
+            EndSearch();
         }
+    }
+
+    private void EndSearch()
+    {
+        //Resetting search variables
+        _searchTimer = 0f;
+        _isSearching = false;
+        _SearchPointCreated = false;
+
+        if (_searchPointInstance != null)
+            Destroy(_searchPointInstance);
+    }
+
+    //What functionality the agent should perform when it spots the target
+    public void TargetIsSpotted(Transform target)
+    {
+        //If agent is not already in the list of agents that have eyes on the target
+        if (!_eyesOnTarget.Contains(_agent))
+        {
+            //Add the agent to the list
+            _eyesOnTarget.Add(_agent);
+
+            EndSearch();
+
+            //If the agent is not already in the PURSUE state, transition to it
+            if (_currentState != EState.PURSUE)
+                TransitionTo(EState.PURSUE);
+        }
+
+        //Saving the position of the target for when the agent loses sight of it
+        _lastKnownPosition = target.position;
+    }
+
+    //What functionality the agent should perform when it loses sight of the target
+    public void TargetIsLost()
+    {
+        //If the no longer has eyes on the target
+        if (_eyesOnTarget.Contains(_agent))
+        {
+            //Remove them from the list
+            _eyesOnTarget.Remove(_agent);
+
+            //If the agent is not already in the SEARCH state, transition to it
+            if (_currentState != EState.SEARCH)
+                TransitionTo(EState.SEARCH);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Search Point"))
+            _isSearching = true;
+        Debug.Log("Searching");
     }
 
     //private void OnDrawGizmos()
