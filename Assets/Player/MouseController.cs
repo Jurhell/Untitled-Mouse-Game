@@ -21,6 +21,7 @@ public class MouseController : MonoBehaviour
     private float _currentVelocity;
     private Vector2 _locomotionInput;
     private Vector3 _direction;
+    private Vector3 _spawnLocation;
     private bool _jumpInput;
     private bool _isGrounded;
     private bool _readyToJump = true;
@@ -38,6 +39,11 @@ public class MouseController : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody>();
         _topSpeed = _speed;
+    }
+
+    private void Start()
+    {
+        _spawnLocation = transform.position;
     }
 
     // Update is called once per frame
@@ -108,6 +114,17 @@ public class MouseController : MonoBehaviour
     public void OnJump(InputAction.CallbackContext context)
     {
 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //If player falls out of world
+        if (other.CompareTag("Death Plane"))
+        {
+            //Reset position and velocity
+            transform.position = _spawnLocation + Vector3.up;
+            _rigidBody.velocity = Vector3.zero;
+        }
     }
 
     private IEnumerator Wait(Action callback, float delay)
