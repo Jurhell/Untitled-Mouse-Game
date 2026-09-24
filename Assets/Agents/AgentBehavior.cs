@@ -16,7 +16,10 @@ public class AgentBehavior : MonoBehaviour
     [SerializeField, Tooltip("The GameObject representing the search point.")]
     private GameObject _searchPoint;
 
-    private float _searchTimer = 0f;
+    private float _searchTimer = 15f;
+    private float _randomFloat = 0f;
+
+    private Vector3 _spawnLocation;
     private Vector3 _lastKnownPosition;
 
     private GameObject _searchPointInstance;
@@ -46,6 +49,7 @@ public class AgentBehavior : MonoBehaviour
     void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _spawnLocation = transform.position;
     }
 
     // Update is called once per frame
@@ -53,17 +57,6 @@ public class AgentBehavior : MonoBehaviour
     {
         if (!_agent.enabled)
             return;
-
-        //Line of sight
-        //LineOfSightCheck();
-
-        //Target alert radius
-
-        //When player runs behind something or out of sight, agent stops pursuing player
-        //Search last spotted area
-
-        //When head agent is no longer in pursuit, all agents stop pursuing
-        //Farther agents can end pursuit on their own if they lose sight of the target
 
         //Idle state should only be active at the beginning of the game
         if (_currentState == EState.WORKING)
@@ -94,7 +87,6 @@ public class AgentBehavior : MonoBehaviour
         //Guard Clause
         if (!_agent.enabled || !_targetIsFound)
             return;
-        Debug.Log(_eyesOnTarget.Count);
 
         Chase();
 
@@ -139,30 +131,31 @@ public class AgentBehavior : MonoBehaviour
 
         //Having the agent move to the search point
         _agent.destination = _searchPointInstance.transform.position;
-
+        
         //While agent is searching
         if (_isSearching)
         {
             _searchTimer += Time.deltaTime;
 
+            _agent.transform.rotation = Quaternion.Slerp(_agent.transform.rotation, Quaternion.Euler(0, _randomFloat, 0), Time.deltaTime * 2f); ;
+
             if (!_searchTriggered)
             {
-                //Having the agent rotate in a random direction every 3 seconds while searching,
-                //and preventing the agent from rotating again until the 3 seconds have passed
-                StartCoroutine(Wait(() => { _agent.transform.Rotate(0, UnityEngine.Random.Range(-180f, 180f), 0); _searchTriggered = false; }, 3f));
+                //Generating a random Y value for the agent to rotate towards,
+                //and preventing a second value from being generated until 3 seconds have passed
+                StartCoroutine(Wait(() => { _randomFloat = UnityEngine.Random.Range(-180f, 180f); _searchTriggered = false; }, 3f));
                 _searchTriggered = true;
             }
-            
-            Debug.Log("Searching");
         }
 
         //If the agent hasn't found the target after searching for a set amount of time...
-        if (_searchTimer == _searchTime)
+        if (_searchTimer >= _searchTime)
         {
             //...Agent will end search and return to its normal behavior
             TransitionTo(EState.WORKING);
-            Debug.Log("Test");
             EndSearch();
+
+            _agent.destination = _spawnLocation;
         }
     }
 
@@ -216,21 +209,7 @@ public class AgentBehavior : MonoBehaviour
     {
         if (other.CompareTag("Search Point"))
             _isSearching = true;
-        Debug.Log("Searching");
     }
-
-    //private void OnDrawGizmos()
-    //{
-    //    //Drawing a sphere to represent the agent's detection radius
-    //    Gizmos.color = Color.green;
-    //    Gizmos.DrawWireSphere(transform.position, _agentDetectionRadius * _agent.radius);
-    //    //Drawing a line to represent the agent's line of sight
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawLine(transform.position, _hit.point);
-    //    //
-    //    Gizmos.color = Color.yellow;
-    //    Gizmos.DrawSphere(_hit.point, 0.1f);
-    //}
 
     private IEnumerator Wait(Action callback, float waitTime)
     {
