@@ -80,6 +80,10 @@ public class AgentBehavior : MonoBehaviour
 
             return;
         }
+
+        //Ideas
+        //Hiding underneath counters can serve as colliders that block raycast
+        //If player is hidden and poking out instead of immediately chasing fill up a detection bar
     }
 
     private void FixedUpdate()
@@ -209,6 +213,13 @@ public class AgentBehavior : MonoBehaviour
     {
         if (other.CompareTag("Search Point"))
             _isSearching = true;
+
+        if (other.CompareTag("Player"))
+        {
+            //GameplayManager.DamagePlayer();
+            Debug.Log("Here");
+            other.GetComponent<Rigidbody>().AddForce((transform.forward * 10000000f), ForceMode.Impulse);
+        }
     }
 
     private IEnumerator Wait(Action callback, float waitTime)

@@ -421,7 +421,7 @@ GameObject:
   - component: {fileID: 6405382544526980153}
   m_Layer: 0
   m_Name: Mouse
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -460,7 +460,7 @@ GameObject:
   - component: {fileID: 1533320851417794751}
   m_Layer: 6
   m_Name: Capsule
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

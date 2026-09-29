@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Search Point
   - Death Plane
+  - GameplayManager
   layers:
   - Default
   - TransparentFX
