@@ -8,17 +8,22 @@ public class FollowTarget : MonoBehaviour
     [SerializeField] private float _rotationSpeed = 10f;
     [SerializeField] private float _bottomClamp = -40f;
     [SerializeField] private float _topClamp = 70f;
-
     private float _cinemachineTargetPitch;
     private float _cinemachineTargetYaw;
 
     private void LateUpdate()
     {
         CameraLogic();
+
+        Vector3 velocity = Vector3.zero;
+        transform.position = Vector3.SmoothDamp(transform.position, _followTarget.position, ref velocity, 0.05f);
     }
 
     private void CameraLogic()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         float mouseX = GetMouseInput("Mouse X");
         float mouseY = GetMouseInput("Mouse Y");
 
@@ -26,7 +31,7 @@ public class FollowTarget : MonoBehaviour
         //Unrestricted horizontal rotation...
         _cinemachineTargetYaw = UpdateRotation(_cinemachineTargetYaw, mouseX, float.MinValue, float.MaxValue, false);
 
-        ApplyRotations(-_cinemachineTargetPitch, _cinemachineTargetYaw);
+        ApplyRotations(_cinemachineTargetPitch, _cinemachineTargetYaw);
     }
 
     private void ApplyRotations(float pitch, float yaw)

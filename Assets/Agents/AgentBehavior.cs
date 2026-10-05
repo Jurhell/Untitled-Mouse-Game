@@ -21,6 +21,7 @@ public class AgentBehavior : MonoBehaviour
 
     private Vector3 _spawnLocation;
     private Vector3 _lastKnownPosition;
+    private Vector3 _velocity = Vector3.zero;
 
     private GameObject _searchPointInstance;
 
@@ -58,6 +59,7 @@ public class AgentBehavior : MonoBehaviour
         if (!_agent.enabled)
             return;
 
+
         //Idle state should only be active at the beginning of the game
         if (_currentState == EState.WORKING)
         {
@@ -93,6 +95,9 @@ public class AgentBehavior : MonoBehaviour
             return;
 
         Chase();
+
+        //Smoothing agent's movement to prevent jittering
+        _agent.transform.position = Vector3.SmoothDamp(_agent.transform.position, _agent.nextPosition, ref _velocity, 0.05f);
 
         //If no agents are in pursuit, the target is no longer found
         if (_eyesOnTarget.Count == 0)
@@ -209,17 +214,21 @@ public class AgentBehavior : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!collision.gameObject.CompareTag("Player"))
+            return;
+
+        //Launching the player back when they collide with the agent
+        collision.gameObject.GetComponent<Rigidbody>().AddForce((transform.forward * 10f), ForceMode.Impulse);
+
+        GameplayManager.DamagePlayer();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Search Point"))
             _isSearching = true;
-
-        if (other.CompareTag("Player"))
-        {
-            //GameplayManager.DamagePlayer();
-            Debug.Log("Here");
-            other.GetComponent<Rigidbody>().AddForce((transform.forward * 10000000f), ForceMode.Impulse);
-        }
     }
 
     private IEnumerator Wait(Action callback, float waitTime)

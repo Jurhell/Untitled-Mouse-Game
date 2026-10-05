@@ -7,13 +7,14 @@ public class GameplayManager : MonoBehaviour
     private static GameplayManager _instance;
     public static GameplayManager Instance => _instance;
 
-    private static float _playerHealth = 3f;
-    private static float _healthReset;
+    private static int _playerHealth = 3;
+    private static int _healthReset;
 
     public static bool _bGameStarted = false;
     private static bool _bGameOver = false;
     private static bool _bPlayerIsInvincible = false;
 
+    public static int PlayerHealth => _playerHealth;
     public static bool GameOver => _bGameOver;
     public static bool Invincible => _bPlayerIsInvincible;
 
@@ -35,22 +36,25 @@ public class GameplayManager : MonoBehaviour
         if (_bPlayerIsInvincible)
             return;
 
-        _playerHealth -= 1f;
+        _playerHealth -= 1;
+
+        PlayerHealthUI playerHealthUI = FindObjectOfType<PlayerHealthUI>();
+        playerHealthUI.UpdateHealth();
 
         PlayerInvincibilty();
 
-        if (_playerHealth <= 0f)
+        if (_playerHealth <= 0)
             TriggerEndState();
     }
 
     private static void ResetHealth() => _playerHealth = _healthReset;
 
     private static void PlayerInvincibilty() => _bPlayerIsInvincible = true;
-    private static void EndInvincibilty() => _bPlayerIsInvincible = false;
+    public static void EndInvincibilty() => _bPlayerIsInvincible = false;
 
     public static void TriggerEndState()
     {
-        _bGameOver = false;
+        _bGameOver = true;
     }
 
     public static void OnReset()

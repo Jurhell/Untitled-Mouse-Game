@@ -116,6 +116,12 @@ public class MouseController : MonoBehaviour
 
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+            StartCoroutine(Wait(() => GameplayManager.EndInvincibilty(), 2f));
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         //If player falls out of world
