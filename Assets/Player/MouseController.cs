@@ -15,6 +15,8 @@ public class MouseController : MonoBehaviour
     [SerializeField, Header("Camera")]
     private Transform _camera;
 
+    private PlayerControls _playerActions;
+
     private float _topSpeed;
     private float _offset = 2f;
     private float _smoothTime = 0.05f;
@@ -45,6 +47,18 @@ public class MouseController : MonoBehaviour
     {
         _spawnLocation = transform.position;
     }
+
+    //private void OnEnable()
+    //{
+    //    _playerActions.Locomotion.Enable();
+    //    _playerActions.Locomotion.Move.performed += OnMove;
+    //    _playerActions.Locomotion.Jump.performed += OnJump;
+    //}
+
+    //private void OnDisable()
+    //{
+    //    _playerActions.Locomotion.Disable();
+    //}
 
     // Update is called once per frame
     void Update()

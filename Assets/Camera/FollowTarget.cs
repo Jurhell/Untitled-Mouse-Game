@@ -21,6 +21,15 @@ public class FollowTarget : MonoBehaviour
 
     private void CameraLogic()
     {
+        // If the game is paused, show the cursor and unlock it
+        if (GameplayManager.GamePaused)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            return;
+        }
+
+        //Else, hide the cursor and lock it to the center of the screen
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 

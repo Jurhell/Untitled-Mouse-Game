@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameplayManager : MonoBehaviour
 {
@@ -12,10 +13,12 @@ public class GameplayManager : MonoBehaviour
 
     public static bool _bGameStarted = false;
     private static bool _bGameOver = false;
+    private static bool _bGamePaused = false;
     private static bool _bPlayerIsInvincible = false;
 
     public static int PlayerHealth => _playerHealth;
     public static bool GameOver => _bGameOver;
+    public static bool GamePaused => _bGamePaused;
     public static bool Invincible => _bPlayerIsInvincible;
 
     private void Awake()
@@ -60,5 +63,30 @@ public class GameplayManager : MonoBehaviour
     public static void OnReset()
     {
         ResetHealth();
+
+        //Restoring game time and loading the current scene
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public static void OnPause()
+    {
+        _bGamePaused = true;
+        //Freezing the game world
+        Time.timeScale = 0.0001f;
+    }
+
+    public static void OnUnPause()
+    {
+        _bGamePaused = false;
+        //Unfreezing the game world
+        Time.timeScale = 1f;
+    }
+
+    public static void OnQuit()
+    {
+        //Restoring game time and loading the main menu scene
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(0);
     }
 }
