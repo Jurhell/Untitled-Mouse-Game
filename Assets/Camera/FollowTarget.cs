@@ -22,7 +22,7 @@ public class FollowTarget : MonoBehaviour
     private void CameraLogic()
     {
         // If the game is paused, show the cursor and unlock it
-        if (GameplayManager.GamePaused)
+        if (GameplayManager.GamePaused || GameplayManager.GameOver)
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;

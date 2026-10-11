@@ -34,6 +34,12 @@ public class GameplayManager : MonoBehaviour
 
     public static void bGameStarted() => _bGameStarted = true;
 
+    private static void ResetBooleans()
+    {
+        _bGameOver = false;
+        _bGamePaused = false;
+    }
+
     public static void DamagePlayer()
     {
         if (_bPlayerIsInvincible)
@@ -51,19 +57,21 @@ public class GameplayManager : MonoBehaviour
     }
 
     private static void ResetHealth() => _playerHealth = _healthReset;
-
     private static void PlayerInvincibilty() => _bPlayerIsInvincible = true;
     public static void EndInvincibilty() => _bPlayerIsInvincible = false;
 
     public static void TriggerEndState()
     {
         _bGameOver = true;
+        _bGameStarted = false;
+
+        //Calling the EndState script to handle the end of the game
+        FindObjectOfType<EndState>().EndingCall();
     }
 
     public static void OnReset()
     {
-        _bGamePaused = false;
-
+        ResetBooleans();
         ResetHealth();
 
         //Restoring game time and loading the current scene
@@ -86,6 +94,8 @@ public class GameplayManager : MonoBehaviour
     }
     public static void OnMenu()
     {
+        ResetBooleans();
+
         //Restoring game time and loading the main menu scene
         Time.timeScale = 1f;
         SceneManager.LoadScene(0);
