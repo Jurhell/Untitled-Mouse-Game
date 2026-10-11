@@ -62,6 +62,8 @@ public class GameplayManager : MonoBehaviour
 
     public static void OnReset()
     {
+        _bGamePaused = false;
+
         ResetHealth();
 
         //Restoring game time and loading the current scene
@@ -82,11 +84,12 @@ public class GameplayManager : MonoBehaviour
         //Unfreezing the game world
         Time.timeScale = 1f;
     }
-
-    public static void OnQuit()
+    public static void OnMenu()
     {
         //Restoring game time and loading the main menu scene
         Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
+
+    public static void OnQuit() => Application.Quit();
 }
